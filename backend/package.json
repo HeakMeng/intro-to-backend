@@ -1,0 +1,19 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "for learning backend development only",
+  "repository": {
+    "type": "git",
+    "url": "(https://github.com/HeakMeng/intro-to-backend.git)"
+  },
+  "license": "ISC",
+  "author": "HeakMeng",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

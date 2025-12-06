@@ -7,3 +7,4 @@ Dockerize => for deployment
 Linux => will use EC2 for hosting!
 
 
+constant.js for store varaible name 
