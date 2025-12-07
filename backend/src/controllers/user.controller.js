@@ -9,6 +9,14 @@ const registerUser = async (req, res) => {
     if(!username || !email || !password){
       return res.status(400).json({message: "All fields are important!"});
     }
+    
+    if (username.length < 3) {
+      return res.status(400).json({ message: "Username must be at least 3 characters long!" });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters long!" });
+    }
     console.log("2. Checking DB...");
     const existing = await User.findOne({email: email.toLowerCase()});
     console.log("3. User check done. Result:", existing);
@@ -38,6 +46,16 @@ const registerUser = async (req, res) => {
   }
 };
 
+const getAllUsers = async (req, res) => {
+  try{
+    const users = await User.find({});
+    res.status(200).json(users);
+  } catch(error){
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+}
+
 export {
-  registerUser
+  registerUser,
+  getAllUsers
 }
