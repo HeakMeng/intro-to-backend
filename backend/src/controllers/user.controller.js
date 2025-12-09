@@ -1,5 +1,6 @@
 import{ User } from "../models/users.model.js";
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 
 const registerUser = async (req, res) => {
   try{
@@ -61,26 +62,33 @@ const loginUser = async (req, res) => {
       message: "User doesn't exist!"
     });
 
+    if (user.loggedIn) {
+      return res.status(409).json({ message: "User already logged in!" });
+    }
+
     const isMatch = await user.comparePassword(password);
 
     if(!isMatch){
       return res.status(400).json({message: "Invalid credentials"});
     };
 
+    const token = jwt.sign(
+      {
+        _id: user._id,
+        email: user.email
+      },
+      process.env.jwt_secret || 'heak_scret_key4569',
+      {expiresIn: "1d"}
+    );
     user.loggedIn = true;
     await user.save();
-
-    if (user.loggedIn === true) {
-        return res.status(409).json({ 
-            message: "User is already logged in! Please logout first." 
-        });
-    };
 
     const userResponse = user.toObject();
     delete userResponse.password;
 
     res.status(200).json({
       message: "Log in successfully!",
+      accessToken: token,
       user: userResponse
     })
   } catch(error){
