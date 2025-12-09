@@ -26,7 +26,7 @@ const userSchema = new Schema(
       required: [true, "Password is required"],
       minLength: [6, "Password must be at least 6 characters@"],
       select: false,
-      naxLength: 50
+      maxLength: 50
     }
   },
   {
