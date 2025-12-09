@@ -64,7 +64,16 @@ const loginUser = async (req, res) => {
     const isMatch = await user.comparePassword(password);
 
     if(!isMatch){
-      return res.status(400).json({message: "Invalid credentials"})
+      return res.status(400).json({message: "Invalid credentials"});
+    };
+
+    user.loggedIn = true;
+    await user.save();
+
+    if (user.loggedIn === true) {
+        return res.status(409).json({ 
+            message: "User is already logged in! Please logout first." 
+        });
     };
 
     const userResponse = user.toObject();
@@ -128,11 +137,58 @@ const updateUser = async (req, res) => {
   }
 };
 
+const deleteUser = async (req, res) => {
+  try{
+    const { id,username } = req.params;
 
+    if(!mongoose.Types.ObjectId.isValid(id)){
+      return res.status(400).json({message: "Invalid user ID"});
+    }
+
+    const deletedUser = await User.findByIdAndDelete(id);
+    if(!deleteUser){
+      return res.status(404).json({message: "User not found!@"});
+    }
+    res.status(200).json({
+      message: "User deleted successfully!"
+    })
+  } catch(error){
+    res.status(500).json({message: "Internal Server Error", error: error.message});
+  }
+};
+
+const logoutUser = async (req, res) => {
+  try{
+    const {id} = req.body;
+    
+    if(!mongoose.Types.ObjectId.isValid(id)){
+      return res.status(400).json({message: "Invalid user ID"});
+    }
+
+    const user = await User.findById(id);
+    if(!user) {
+      return res.status(404).json({message: "User id not found!"});
+    }
+    user.loggedIn = false;
+    await user.save();
+
+    res.status(200).json({
+      message: "User loggout successfully!",
+      user: {
+        username: user.username,
+        loggedIn: user.loggedIn
+      }
+    });
+  } catch(error){
+    res.status(500).json({message: "Internal Server Error", error: error.message});
+  }
+};
 
 export {
   registerUser,
   getAllUsers,
   loginUser,
-  updateUser
+  updateUser,
+  deleteUser,
+  logoutUser
 };
